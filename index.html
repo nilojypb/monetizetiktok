@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
 const FollowProfiles = ({ onComplete }) => {
@@ -17,13 +16,13 @@ const FollowProfiles = ({ onComplete }) => {
           onClick={() => handleFollow("first")}
           disabled={followed.first}
         >
-          <a href="https://www.tiktok.com/@thamyresp06?_t=ZM-8tAVH9k5Gh3&_r=1" target="_blank" rel="noopener noreferrer">Follow @thamyresp06</a>
+          Follow @thamyresp06
         </Button>
         <Button
           onClick={() => handleFollow("second")}
           disabled={followed.second}
         >
-          <a href="https://www.tiktok.com/@mentecuriosabia?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">Follow @mentecuriosabia</a>
+          Follow @mentecuriosabia
         </Button>
       </div>
       <Button
@@ -41,8 +40,12 @@ const Register = ({ onComplete }) => {
   const [userData, setUserData] = useState({ email: "", username: "", password: "" });
 
   const handleRegister = () => {
-    alert("Registration successful! Redirecting to login...");
-    onComplete();
+    if (userData.email && userData.username && userData.password) {
+      alert("Registration successful! Redirecting to login...");
+      onComplete();
+    } else {
+      alert("Please fill in all fields!");
+    }
   };
 
   return (
@@ -110,13 +113,16 @@ const Home = ({ coins, setCoins, videoLinks, setVideoLinks, watchedLinks, setWat
     }
   };
 
-  const handleWatchVideo = (link) => {
-    if (!watchedLinks.includes(link)) {
-      setWatchedLinks([...watchedLinks, link]);
+  const handleWatchVideo = () => {
+    const unWatchedLinks = videoLinks.filter((link) => !watchedLinks.includes(link));
+    if (unWatchedLinks.length > 0) {
+      const randomLink = unWatchedLinks[Math.floor(Math.random() * unWatchedLinks.length)];
+      window.open(randomLink, "_blank");
+      setWatchedLinks([...watchedLinks, randomLink]);
       setCoins(coins + 10);
       alert("You earned 10 coins for watching the video!");
     } else {
-      alert("You have already watched this video!");
+      alert("No more videos to watch!");
     }
   };
 
@@ -147,27 +153,14 @@ const Home = ({ coins, setCoins, videoLinks, setVideoLinks, watchedLinks, setWat
             document.querySelector("input[type='url']").value = "";
           }
         }}
+        disabled={!document.querySelector("input[type='url']").value}
       >
         Add Link
       </Button>
       <h2 className="text-xl font-bold mt-4">Videos</h2>
-      {videoLinks.length === 0 ? (
-        <p>No videos added yet.</p>
-      ) : (
-        videoLinks.map((link, index) => (
-          <Card key={index} className="mb-2">
-            <CardContent className="flex justify-between items-center">
-              <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
-              <Button
-                onClick={() => handleWatchVideo(link)}
-                disabled={watchedLinks.includes(link)}
-              >
-                {watchedLinks.includes(link) ? "Watched" : "Watch Video"}
-              </Button>
-            </CardContent>
-          </Card>
-        ))
-      )}
+      <Button className="mt-4" onClick={handleWatchVideo}>
+        Watch a Video
+      </Button>
     </div>
   );
 };
