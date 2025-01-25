@@ -1,0 +1,171 @@
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+
+const App = () => {
+  const [step, setStep] = useState("follow");
+  const [followed, setFollowed] = useState({ first: false, second: false });
+  const [userData, setUserData] = useState({ email: "", username: "", password: "" });
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [coins, setCoins] = useState(0);
+  const [videoLinks, setVideoLinks] = useState([]);
+  const [watchedLinks, setWatchedLinks] = useState([]);
+
+  const handleFollow = (profile) => {
+    setFollowed({ ...followed, [profile]: true });
+  };
+
+  const handleRegister = () => {
+    // Simulated registration logic
+    alert("Registration successful! Redirecting to login...");
+    setStep("login");
+  };
+
+  const handleLogin = () => {
+    // Simulated login logic
+    setIsLoggedIn(true);
+    setStep("home");
+  };
+
+  const handleAddLink = (link) => {
+    if (coins >= 50) {
+      setVideoLinks([...videoLinks, link]);
+      setCoins(coins - 50);
+    } else {
+      alert("Not enough coins to add a link!");
+    }
+  };
+
+  const handleWatchVideo = (link) => {
+    if (!watchedLinks.includes(link)) {
+      setWatchedLinks([...watchedLinks, link]);
+      setCoins(coins + 10);
+    }
+  };
+
+  if (step === "follow") {
+    return (
+      <div className="p-4 text-center">
+        <h1 className="text-2xl font-bold mb-4">Follow These Profiles</h1>
+        <div className="grid grid-cols-1 gap-4">
+          <Button
+            onClick={() => handleFollow("first")}
+            disabled={followed.first}
+          >
+            <a href="https://www.tiktok.com/@thamyresp06?_t=ZM-8tAVH9k5Gh3&_r=1" target="_blank" rel="noopener noreferrer">Follow @thamyresp06</a>
+          </Button>
+          <Button
+            onClick={() => handleFollow("second")}
+            disabled={followed.second}
+          >
+            <a href="https://www.tiktok.com/@mentecuriosabia?is_from_webapp=1&sender_device=pc" target="_blank" rel="noopener noreferrer">Follow @mentecuriosabia</a>
+          </Button>
+        </div>
+        <Button
+          className="mt-4"
+          onClick={() => setStep("register")}
+          disabled={!followed.first || !followed.second}
+        >
+          I Followed
+        </Button>
+      </div>
+    );
+  }
+
+  if (step === "register") {
+    return (
+      <div className="p-4 max-w-md mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Register</h1>
+        <input
+          type="email"
+          placeholder="Email"
+          value={userData.email}
+          onChange={(e) => setUserData({ ...userData, email: e.target.value })}
+          className="border p-2 w-full mb-2"
+        />
+        <input
+          type="text"
+          placeholder="Username"
+          value={userData.username}
+          onChange={(e) => setUserData({ ...userData, username: e.target.value })}
+          className="border p-2 w-full mb-2"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={userData.password}
+          onChange={(e) => setUserData({ ...userData, password: e.target.value })}
+          className="border p-2 w-full mb-4"
+        />
+        <Button onClick={handleRegister}>Register</Button>
+        <p className="mt-4">
+          Already have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setStep("login")}>Login</span>
+        </p>
+      </div>
+    );
+  }
+
+  if (step === "login") {
+    return (
+      <div className="p-4 max-w-md mx-auto">
+        <h1 className="text-2xl font-bold mb-4">Login</h1>
+        <input
+          type="text"
+          placeholder="Email or Username"
+          className="border p-2 w-full mb-2"
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          className="border p-2 w-full mb-4"
+        />
+        <Button onClick={handleLogin}>Login</Button>
+        <p className="mt-4">
+          Don't have an account? <span className="text-blue-500 cursor-pointer" onClick={() => setStep("register")}>Register</span>
+        </p>
+      </div>
+    );
+  }
+
+  if (step === "home") {
+    return (
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <span>Coins: {coins}</span>
+          <Button onClick={() => setIsLoggedIn(false)}>Logout</Button>
+        </div>
+        <h1 className="text-2xl font-bold mb-4">Add TikTok Links</h1>
+        <input
+          type="url"
+          placeholder="TikTok video/profile link"
+          className="border p-2 w-full mb-2"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleAddLink(e.target.value);
+              e.target.value = "";
+            }
+          }}
+        />
+        <h2 className="text-xl font-bold mt-4">Videos</h2>
+        {videoLinks.map((link, index) => (
+          <Card key={index} className="mb-2">
+            <CardContent>
+              <a href={link} target="_blank" rel="noopener noreferrer">{link}</a>
+              <Button
+                onClick={() => handleWatchVideo(link)}
+                disabled={watchedLinks.includes(link)}
+                className="ml-4"
+              >
+                Watch Video
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
+};
+
+export default App;
